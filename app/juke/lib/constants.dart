@@ -3,7 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:juke/models/home_screen.dart';
+import 'package:juke/pages/home_screen.dart';
 
 const Color primaryColor = Color(0XFFC6491B);
 const Color onPrimaryColor = Color(0XFF1B1712);
