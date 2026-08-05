@@ -1,6 +1,3 @@
-// Color Palette
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:juke/pages/home_screen.dart';
@@ -13,10 +10,13 @@ const Color errorColor = Color(0XFFDB3D3D);
 const Color surfaceColor = Color(0XFFEFE7D8);
 const Color onSurfaceColor = Color(0XFF1B1712);
 
+const antonFamily = 'Anton';
+const jetBrainsMonoFamily = 'JetBrainsMono';
+
 // Define theme
 var theme = ThemeData(
   useMaterial3: true,
-  fontFamily: "Anton",
+  fontFamily: antonFamily,
   colorScheme: ColorScheme(
     brightness: Brightness.light,
     primary: primaryColor,

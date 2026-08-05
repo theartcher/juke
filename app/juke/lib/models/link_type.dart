@@ -1,0 +1,1 @@
+enum LinkType { Unsupported, Spotify }

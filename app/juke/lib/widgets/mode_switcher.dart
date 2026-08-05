@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:juke/models/mode_option.dart';
 import 'package:juke/stores/homepage_store.dart';
-
-enum ModeOption { create, scan }
 
 class ModeSwitcher extends StatelessWidget {
   const ModeSwitcher({super.key});
@@ -57,6 +56,5 @@ class ModeSwitcher extends StatelessWidget {
         ],
       ),
     );
-    ;
   }
 }

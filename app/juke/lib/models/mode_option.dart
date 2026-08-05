@@ -1,0 +1,1 @@
+enum ModeOption { create, scan }
