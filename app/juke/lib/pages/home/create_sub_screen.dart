@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:juke/constants.dart';
+import 'package:juke/models/link_type.dart';
 import 'package:juke/stores/homepage_store.dart';
 import 'package:juke/widgets/custom_button.dart';
 import 'package:provider/provider.dart';
@@ -25,17 +26,25 @@ class _CreateSubScreenState extends State<CreateSubScreen> {
 
   void _pasteClipboard() async {
     final clipboardData = await Clipboard.getData(Clipboard.kTextPlain);
-    String? clipboardText = clipboardData?.text;
-
+    final clipboardText = clipboardData?.text;
     if (clipboardText == null || clipboardText.isEmpty) {
       return;
     }
 
     musicLinkController.text = clipboardText;
+    context.read<HomePageNotifier>().setMusicLink(
+      clipboardText,
+    ); // manually sync store
   }
 
   @override
   Widget build(BuildContext context) {
+    final linkType = context.watch<HomePageNotifier>().linkType;
+    final musicLink = context.watch<HomePageNotifier>().musicLink;
+
+    final hasInput = musicLink.isNotEmpty;
+    final isValid = linkType != LinkType.Unsupported;
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -91,6 +100,15 @@ class _CreateSubScreenState extends State<CreateSubScreen> {
                   fontFamily: jetBrainsMonoFamily,
                   fontSize: 20.0,
                 ),
+                focusColor: secondaryColor,
+                errorText: hasInput && !isValid
+                    ? "This link must be a valid Spotify playlist"
+                    : null,
+                errorMaxLines: 2,
+                errorStyle: TextStyle(
+                  fontFamily: jetBrainsMonoFamily,
+                  fontSize: 14.0,
+                ),
                 border: const OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.zero),
                   borderSide: BorderSide(width: 20),
@@ -100,7 +118,7 @@ class _CreateSubScreenState extends State<CreateSubScreen> {
           ),
           CustomButton(
             text: "make my cards",
-            onPress: () => {},
+            onPress: isValid ? () => {} : null,
             type: ButtonType.primary,
           ),
         ],

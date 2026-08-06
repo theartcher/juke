@@ -47,3 +47,6 @@ final GoRouter router = GoRouter(
     ),
   ],
 );
+
+//ENV variables
+const spotifyClientId = "CLIENT_ID";
