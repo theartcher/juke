@@ -1,59 +1,89 @@
 import 'package:flutter/material.dart';
+import 'package:juke/constants.dart';
+import 'package:provider/provider.dart';
 import 'package:juke/models/mode_option.dart';
 import 'package:juke/stores/homepage_store.dart';
 
 class ModeSwitcher extends StatelessWidget {
   const ModeSwitcher({super.key});
 
+  static const _cream = Color(0xFFF3EFE7);
+  static const _black = Color(0xFF1C1C1C);
+  static const _borderRadius = 200.0;
+
   @override
   Widget build(BuildContext context) {
-    final store = HomePageNotifier();
-    final currentModeIndex = store.currentMode == ModeOption.create ? 0 : 1;
+    final store = context.watch<HomePageNotifier>();
+    final isCreate = store.currentMode == ModeOption.create;
 
-    return Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: const Color(0xFFE8E5E0),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: ClipRRect(
         borderRadius: BorderRadius.circular(999),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0x0F000000),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildSegment(
+              context,
+              label: 'CREATE',
+              selected: isCreate,
+              isLeftSegment: true,
+              onTap: () => context.read<HomePageNotifier>().changeMode(
+                ModeOption.create,
+              ),
+            ),
+            _buildSegment(
+              context,
+              label: 'SCAN',
+              selected: !isCreate,
+              isLeftSegment: false,
+              onTap: () =>
+                  context.read<HomePageNotifier>().changeMode(ModeOption.scan),
+            ),
+          ],
+        ),
       ),
-      child: ToggleButtons(
-        isSelected: [currentModeIndex == 0, currentModeIndex == 1],
-        onPressed: (int index) {
-          final nextMode = index == 0 ? ModeOption.create : ModeOption.scan;
-          store.changeMode(nextMode);
-        },
-        borderRadius: BorderRadius.circular(999),
-        borderColor: Colors.transparent,
-        selectedBorderColor: Colors.transparent,
-        fillColor: const Color(0xFFF8F6F2),
-        selectedColor: Colors.black,
-        color: const Color(0xFFACACAC),
-        splashColor: Colors.transparent,
-        renderBorder: false,
-        constraints: const BoxConstraints(minHeight: 44, minWidth: 64),
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-            child: Text(
-              'CREATE',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
+    );
+  }
+
+  Widget _buildSegment(
+    BuildContext context, {
+    required String label,
+    required bool selected,
+    required bool isLeftSegment,
+    required VoidCallback onTap,
+  }) {
+    final leftSegmentBorder = BoxDecoration(
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(_borderRadius),
+        bottomLeft: Radius.circular(_borderRadius),
+      ),
+      border: Border.all(width: 2, color: _black),
+      color: selected ? _black : _cream,
+    );
+    final rightSegmentBorder = BoxDecoration(
+      borderRadius: BorderRadius.only(
+        topRight: Radius.circular(_borderRadius),
+        bottomRight: Radius.circular(_borderRadius),
+      ),
+      border: Border.all(width: 2, color: _black),
+      color: selected ? _black : _cream,
+    );
+
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        decoration: isLeftSegment ? leftSegmentBorder : rightSegmentBorder,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 16,
+            fontFamily: jetBrainsMonoFamily,
+            color: selected ? _cream : _black,
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-            child: Text(
-              'SCAN',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

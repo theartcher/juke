@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:juke/models/link_type.dart';
 import 'package:juke/models/mode_option.dart';
-import 'package:juke/widgets/mode_switcher.dart';
 
 class HomePageNotifier extends ChangeNotifier {
-  ModeOption _currentMode = ModeOption.scan;
+  ModeOption _currentMode = ModeOption.create;
   ModeOption get currentMode => _currentMode;
 
   String _musicLink = "";
@@ -19,12 +18,13 @@ class HomePageNotifier extends ChangeNotifier {
   }
 
   void setMusicLink(String newLink) {
-    if (!isLinkSupported(newLink)) {
+    if (isLinkSupported(newLink)) {
+      _linkType = LinkType.Spotify;
+    } else {
       _linkType = LinkType.Unsupported;
     }
-
-    _linkType = LinkType.Spotify;
     _musicLink = newLink;
+    notifyListeners();
   }
 
   bool isLinkSupported(String link) {
