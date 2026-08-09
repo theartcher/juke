@@ -50,3 +50,5 @@ final GoRouter router = GoRouter(
 
 //ENV variables
 const spotifyClientId = "CLIENT_ID";
+const spotifyAndroidRedirectUrl = "ANDROID_REDIRECT_URL";
+const spotifyWebRedirectUrl = "WEB_REDIRECT_URL";

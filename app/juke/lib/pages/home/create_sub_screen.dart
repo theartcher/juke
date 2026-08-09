@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:juke/constants.dart';
 import 'package:juke/models/link_type.dart';
 import 'package:juke/stores/homepage_store.dart';
+import 'package:juke/utility/spotify_utils.dart';
 import 'package:juke/widgets/custom_button.dart';
 import 'package:provider/provider.dart';
 
@@ -118,7 +119,11 @@ class _CreateSubScreenState extends State<CreateSubScreen> {
           ),
           CustomButton(
             text: "make my cards",
-            onPress: isValid ? () => {} : null,
+            onPress: isValid
+                ? () => {
+                    SpotifyUtils.fetchPlaylist(musicLinkController.value.text),
+                  }
+                : null,
             type: ButtonType.primary,
           ),
         ],
