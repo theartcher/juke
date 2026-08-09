@@ -1,4 +1,4 @@
-include ':spotify-app-remote'
+include(":spotify-app-remote")
 
 pluginManagement {
     val flutterSdkPath =
