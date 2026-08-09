@@ -1,4 +1,3 @@
-// models/track_info.dart
 class TrackInfo {
   final String title;
   final String primaryArtist;

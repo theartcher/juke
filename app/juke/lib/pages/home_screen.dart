@@ -30,7 +30,7 @@ class _HomeScreenBody extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Header(),
+          const Header(showModeSwitcher: true),
           Expanded(
             child: IndexedStack(
               index: currentIndex,

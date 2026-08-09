@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:juke/pages/check_and_repair_screen.dart';
 import 'package:juke/pages/home_screen.dart';
 
 const Color primaryColor = Color(0XFFC6491B);
@@ -12,6 +13,8 @@ const Color onSurfaceColor = Color(0XFF1B1712);
 
 const antonFamily = 'Anton';
 const jetBrainsMonoFamily = 'JetBrainsMono';
+const headerTextSize = 50.0;
+const subHeaderTextSize = 20.0;
 
 // Define theme
 var theme = ThemeData(
@@ -34,10 +37,11 @@ var theme = ThemeData(
 
 // Routes
 const homeRoute = '/';
-const scanRoute = '/scan';
+const checkAndRepairRoute = '/check-and-repair';
 
 // Router
 final GoRouter router = GoRouter(
+  initialLocation: checkAndRepairRoute,
   routes: <RouteBase>[
     GoRoute(
       path: homeRoute,
@@ -45,10 +49,16 @@ final GoRouter router = GoRouter(
         return const HomeScreen();
       },
     ),
+    GoRoute(
+      path: checkAndRepairRoute,
+      builder: (BuildContext context, GoRouterState state) {
+        return const CheckAndRepairScreen();
+      },
+    ),
   ],
 );
 
-//ENV variables
+//ENV variables key definitions
 const spotifyClientId = "CLIENT_ID";
 const spotifyAndroidRedirectUrl = "ANDROID_REDIRECT_URL";
 const spotifyWebRedirectUrl = "WEB_REDIRECT_URL";

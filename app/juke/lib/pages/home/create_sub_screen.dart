@@ -10,8 +10,6 @@ import 'package:provider/provider.dart';
 class CreateSubScreen extends StatefulWidget {
   const CreateSubScreen({super.key});
 
-  static const headerTextSize = 50.0;
-
   @override
   State<CreateSubScreen> createState() => _CreateSubScreenState();
 }
@@ -58,7 +56,7 @@ class _CreateSubScreenState extends State<CreateSubScreen> {
               style: TextStyle(
                 fontFamily: antonFamily,
                 color: secondaryColor,
-                fontSize: CreateSubScreen.headerTextSize,
+                fontSize: headerTextSize,
               ),
               children: [
                 TextSpan(
@@ -66,7 +64,7 @@ class _CreateSubScreenState extends State<CreateSubScreen> {
                   style: TextStyle(
                     fontFamily: antonFamily,
                     color: primaryColor,
-                    fontSize: CreateSubScreen.headerTextSize,
+                    fontSize: headerTextSize,
                   ),
                 ),
               ],
@@ -74,7 +72,10 @@ class _CreateSubScreenState extends State<CreateSubScreen> {
           ),
           Text(
             'Paste your Spotify playlist and Juke turns it into printable cards.',
-            style: TextStyle(fontFamily: jetBrainsMonoFamily, fontSize: 20.0),
+            style: TextStyle(
+              fontFamily: jetBrainsMonoFamily,
+              fontSize: subHeaderTextSize,
+            ),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(0.0, 32.0, 0.0, 16),

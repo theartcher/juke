@@ -3,7 +3,9 @@ import 'package:juke/constants.dart';
 import 'package:juke/widgets/mode_switcher.dart';
 
 class Header extends StatelessWidget {
-  const Header({super.key});
+  final bool showModeSwitcher;
+
+  const Header({super.key, this.showModeSwitcher = false});
 
   static const titleTextSize = 28.0;
 
@@ -31,7 +33,7 @@ class Header extends StatelessWidget {
                 Text("KE", style: TextStyle(fontSize: titleTextSize)),
               ],
             ),
-            ModeSwitcher(),
+            if (showModeSwitcher) ...[ModeSwitcher()],
           ],
         ),
       ),

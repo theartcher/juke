@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:juke/constants.dart';
+import 'package:juke/stores/track_store.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   await dotenv.load(fileName: "assets/.env");
@@ -12,10 +14,13 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      routerConfig: router,
-      theme: theme,
-      debugShowCheckedModeBanner: false,
+    return MultiProvider(
+      providers: [ChangeNotifierProvider(create: (_) => TrackStore())],
+      child: MaterialApp.router(
+        routerConfig: router,
+        theme: theme,
+        debugShowCheckedModeBanner: false,
+      ),
     );
   }
 }
