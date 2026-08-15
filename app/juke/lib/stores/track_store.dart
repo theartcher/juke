@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:juke/models/track_info.dart';
 
-enum TrackStatus { unverified, approved, marked }
+enum TrackStatus { unverified, approved, modificationRequired }
 
 class TrackWithStatus {
   final TrackInfo track;
@@ -24,7 +24,7 @@ class TrackStore extends ChangeNotifier {
       .toList();
 
   List<TrackInfo> get markedTracks => _tracks
-      .where((track) => track.status == TrackStatus.marked)
+      .where((track) => track.status == TrackStatus.modificationRequired)
       .map((track) => track.track)
       .toList();
 
@@ -56,7 +56,7 @@ class TrackStore extends ChangeNotifier {
     notifyListeners();
   }
 
-  void markAllCorrect() {
+  void approveAllTracks() {
     _tracks = _tracks
         .map(
           (track) =>

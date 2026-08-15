@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:juke/pages/check_and_repair_screen.dart';
+import 'package:juke/pages/check_screen.dart';
 import 'package:juke/pages/home_screen.dart';
+import 'package:juke/pages/repair_screen.dart';
 
 const Color primaryColor = Color(0XFFC6491B);
 const Color onPrimaryColor = Color(0XFF1B1712);
@@ -37,11 +38,12 @@ var theme = ThemeData(
 
 // Routes
 const homeRoute = '/';
-const checkAndRepairRoute = '/check-and-repair';
+const checkRoute = '/check';
+const repairRoute = '/repair';
 
 // Router
 final GoRouter router = GoRouter(
-  initialLocation: checkAndRepairRoute,
+  initialLocation: checkRoute,
   routes: <RouteBase>[
     GoRoute(
       path: homeRoute,
@@ -50,9 +52,15 @@ final GoRouter router = GoRouter(
       },
     ),
     GoRoute(
-      path: checkAndRepairRoute,
+      path: checkRoute,
       builder: (BuildContext context, GoRouterState state) {
-        return const CheckAndRepairScreen();
+        return const CheckScreen();
+      },
+    ),
+    GoRoute(
+      path: repairRoute,
+      builder: (BuildContext context, GoRouterState state) {
+        return const RepairScreen();
       },
     ),
   ],

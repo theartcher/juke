@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:juke/constants.dart';
+import 'package:juke/models/fetch_results.dart';
 import 'package:juke/models/link_type.dart';
 import 'package:juke/stores/homepage_store.dart';
+import 'package:juke/stores/track_store.dart';
 import 'package:juke/utility/spotify_utils.dart';
 import 'package:juke/widgets/custom_button.dart';
 import 'package:provider/provider.dart';
@@ -40,9 +43,45 @@ class _CreateSubScreenState extends State<CreateSubScreen> {
   Widget build(BuildContext context) {
     final linkType = context.watch<HomePageNotifier>().linkType;
     final musicLink = context.watch<HomePageNotifier>().musicLink;
+    final trackStore = context.watch<TrackStore>();
 
     final hasInput = musicLink.isNotEmpty;
     final isValid = linkType != LinkType.Unsupported;
+
+    Future<void> handleFetchResults(SpotifyFetchResult results) async {
+      switch (results.status) {
+        case SpotifyFetchStatus.success:
+          trackStore.initializeTracks(results.tracks);
+          //todo navigate synchronously after tracks are initialized
+          context.go(checkRoute);
+          break;
+        case SpotifyFetchStatus.invalidLink:
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('This is not a valid Spotify playlist link.'),
+            ),
+          );
+          break;
+        case SpotifyFetchStatus.needsLogin:
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Please log in to your Spotify account to access this playlist.',
+              ),
+            ),
+          );
+          break;
+
+        case SpotifyFetchStatus.error:
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'An unexpected error occurred while fetching the playlist',
+              ),
+            ),
+          );
+      }
+    }
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -121,8 +160,12 @@ class _CreateSubScreenState extends State<CreateSubScreen> {
           CustomButton(
             text: "make my cards",
             onPress: isValid
-                ? () => {
-                    SpotifyUtils.fetchPlaylist(musicLinkController.value.text),
+                ? () async {
+                    final results = await SpotifyUtils.fetchPlaylist(
+                      musicLinkController.value.text,
+                    );
+
+                    handleFetchResults(results);
                   }
                 : null,
             type: ButtonType.primary,
