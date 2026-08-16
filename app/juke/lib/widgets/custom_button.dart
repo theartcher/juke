@@ -33,13 +33,14 @@ class CustomButton extends StatelessWidget {
     final textColor = _getTextColor(type, isDisabled);
     final fillColor = _getFillColor(type, isDisabled);
 
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(width: 2, color: borderColor),
-        color: fillColor,
-      ),
-      child: GestureDetector(
-        onTap: onPress,
+    return GestureDetector(
+      onTap: onPress,
+
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(width: 2, color: borderColor),
+          color: fillColor,
+        ),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 16.0),
           child: Center(

@@ -34,9 +34,7 @@ class _CreateSubScreenState extends State<CreateSubScreen> {
     }
 
     musicLinkController.text = clipboardText;
-    context.read<HomePageNotifier>().setMusicLink(
-      clipboardText,
-    ); // manually sync store
+    context.read<HomePageNotifier>().setMusicLink(clipboardText);
   }
 
   @override
@@ -52,7 +50,6 @@ class _CreateSubScreenState extends State<CreateSubScreen> {
       switch (results.status) {
         case SpotifyFetchStatus.success:
           trackStore.initializeTracks(results.tracks);
-          //todo navigate synchronously after tracks are initialized
           context.go(checkRoute);
           break;
         case SpotifyFetchStatus.invalidLink:

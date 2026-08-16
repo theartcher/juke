@@ -13,6 +13,11 @@ class TrackWithStatus {
 class TrackStore extends ChangeNotifier {
   List<TrackWithStatus> _tracks = List<TrackWithStatus>.empty();
 
+  int get totalTracks => _tracks.length;
+  int get tracksChecked =>
+      _tracks.where((track) => track.status != TrackStatus.unverified).length;
+  TrackInfo? get currentUnverifiedTrack => unverifiedTracks.firstOrNull;
+
   List<TrackInfo> get unverifiedTracks => _tracks
       .where((track) => track.status == TrackStatus.unverified)
       .map((track) => track.track)
@@ -29,10 +34,6 @@ class TrackStore extends ChangeNotifier {
       .toList();
 
   void initializeTracks(List<TrackInfo> tracks) {
-    if (tracks.isNotEmpty) {
-      return;
-    }
-
     _tracks = tracks
         .map(
           (track) =>

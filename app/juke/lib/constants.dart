@@ -43,7 +43,7 @@ const repairRoute = '/repair';
 
 // Router
 final GoRouter router = GoRouter(
-  initialLocation: checkRoute,
+  initialLocation: homeRoute,
   routes: <RouteBase>[
     GoRoute(
       path: homeRoute,
