@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:juke/models/track_info.dart';
+import 'package:uuid/uuid.dart';
 
 enum TrackStatus { unverified, approved, modificationRequired }
 
@@ -32,6 +33,21 @@ class TrackStore extends ChangeNotifier {
       .where((track) => track.status == TrackStatus.modificationRequired)
       .map((track) => track.track)
       .toList();
+
+  void debugTracks() {
+    _tracks = [
+      TrackWithStatus(
+        track: TrackInfo(
+          id: Uuid().v4(),
+          title: 'One Last Time',
+          primaryArtist: 'Daft Punk',
+          releaseYear: 2001,
+          secondaryArtists: [],
+        ),
+        status: TrackStatus.modificationRequired,
+      ),
+    ];
+  }
 
   void initializeTracks(List<TrackInfo> tracks) {
     _tracks = tracks

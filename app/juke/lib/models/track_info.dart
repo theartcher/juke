@@ -1,10 +1,12 @@
 class TrackInfo {
+  final String id;
   final String title;
   final String primaryArtist;
   final List<String> secondaryArtists; // max 2
   final int? releaseYear;
 
   const TrackInfo({
+    required this.id,
     required this.title,
     required this.primaryArtist,
     required this.secondaryArtists,

@@ -8,6 +8,7 @@ import 'package:juke/constants.dart';
 import 'package:juke/models/fetch_results.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
 import 'package:juke/models/track_info.dart';
+import 'package:uuid/uuid.dart';
 
 class SpotifyUtils {
   static final _clientId = dotenv.get(spotifyClientId);
@@ -93,6 +94,7 @@ class SpotifyUtils {
 
       tracks.add(
         TrackInfo(
+          id: Uuid().v4(),
           title: item['name'] as String,
           primaryArtist: artists.isNotEmpty ? artists.first : 'Unknown Artist',
           secondaryArtists: artists.length > 1
