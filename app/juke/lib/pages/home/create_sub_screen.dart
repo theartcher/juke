@@ -121,7 +121,7 @@ class _CreateSubScreenState extends State<CreateSubScreen> {
               autofocus: true,
               onChanged: (value) =>
                   context.read<HomePageNotifier>().setMusicLink(value),
-              style: TextStyle(fontFamily: jetBrainsMonoFamily, fontSize: 18.0),
+              style: TextStyle(fontFamily: jetBrainsMonoFamily, fontSize: 20.0),
               decoration: InputDecoration(
                 suffix: GestureDetector(
                   onTap: () => _pasteClipboard(),

@@ -3,7 +3,7 @@ import 'package:juke/constants.dart';
 import 'package:juke/models/track_info.dart';
 
 class TrackCard extends StatelessWidget {
-  final TrackInfo? track;
+  final TrackInfo track;
 
   const TrackCard({super.key, required this.track});
 
@@ -27,7 +27,7 @@ class TrackCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            track?.releaseYear?.toString() ?? 'N/A',
+            track.releaseYear.toString(),
             style: TextStyle(
               fontFamily: jetBrainsMonoFamily,
               fontSize: 28,
@@ -36,7 +36,7 @@ class TrackCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            track?.title ?? 'N/A',
+            track.title,
             textAlign: TextAlign.center,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
@@ -47,16 +47,31 @@ class TrackCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          Text(
-            track?.primaryArtist ?? 'N/A',
-            textAlign: TextAlign.center,
+          Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: track.primaryArtist,
+                  style: TextStyle(
+                    fontFamily: jetBrainsMonoFamily,
+                    color: onSecondaryColor,
+                    fontSize: 14,
+                  ),
+                ),
+                if (track.secondaryArtists.isNotEmpty)
+                  TextSpan(
+                    text: ' (feat. ${track.secondaryArtists.join(', ')})',
+                    style: TextStyle(
+                      fontFamily: jetBrainsMonoFamily,
+                      color: onSecondaryColor,
+                      fontSize: 14,
+                    ),
+                  ),
+              ],
+            ),
+            softWrap: true,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontFamily: jetBrainsMonoFamily,
-              fontSize: 16,
-              color: onSecondaryColor,
-            ),
           ),
         ],
       ),

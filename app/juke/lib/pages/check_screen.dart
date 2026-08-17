@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:go_router/go_router.dart';
 import 'package:juke/constants.dart';
 import 'package:juke/stores/track_store.dart';
@@ -80,9 +81,9 @@ class _CheckScreenState extends State<CheckScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: dividerPadding * 2,
                     children: [
                       ...headerText,
-                      const SizedBox(height: dividerPadding * 2),
                       Text(
                         '${store.tracksChecked}/${store.totalTracks} tracks checked',
                         style: TextStyle(
@@ -90,7 +91,7 @@ class _CheckScreenState extends State<CheckScreen> {
                           fontSize: subHeaderTextSize,
                         ),
                       ),
-                      const SizedBox(height: dividerPadding * 2),
+                      if (!hasTracks) SpinKitDualRing(color: primaryColor),
                       if (hasTracks)
                         LayoutBuilder(
                           builder: (context, constraints) {
@@ -137,13 +138,7 @@ class _CheckScreenState extends State<CheckScreen> {
                               ),
                             );
                           },
-                        )
-                      else
-                        AspectRatio(
-                          aspectRatio: 1.28,
-                          child: TrackCard(track: null),
                         ),
-                      const SizedBox(height: dividerPadding * 2),
                       Row(
                         children: [
                           Expanded(
@@ -171,7 +166,6 @@ class _CheckScreenState extends State<CheckScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: dividerPadding),
                       GestureDetector(
                         onTap: () {
                           store.approveAllTracks();

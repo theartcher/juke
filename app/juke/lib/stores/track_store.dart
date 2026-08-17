@@ -18,6 +18,8 @@ class TrackStore extends ChangeNotifier {
   int get tracksChecked =>
       _tracks.where((track) => track.status != TrackStatus.unverified).length;
   TrackInfo? get currentUnverifiedTrack => unverifiedTracks.firstOrNull;
+  bool get hasPendingCorrections =>
+      _tracks.any((track) => track.status == TrackStatus.modificationRequired);
 
   List<TrackInfo> get unverifiedTracks => _tracks
       .where((track) => track.status == TrackStatus.unverified)
@@ -35,18 +37,19 @@ class TrackStore extends ChangeNotifier {
       .toList();
 
   void debugTracks() {
-    _tracks = [
-      TrackWithStatus(
-        track: TrackInfo(
-          id: Uuid().v4(),
-          title: 'One Last Time',
-          primaryArtist: 'Daft Punk',
-          releaseYear: 2001,
-          secondaryArtists: [],
-        ),
-        status: TrackStatus.modificationRequired,
+    final track = TrackWithStatus(
+      track: TrackInfo(
+        id: Uuid().v4(),
+        title: 'One Last Time',
+        primaryArtist: 'Daft Punk',
+        releaseYear: 2001,
+        secondaryArtists: [],
       ),
-    ];
+      status: TrackStatus.modificationRequired,
+    );
+
+    _tracks.add(track);
+    notifyListeners();
   }
 
   void initializeTracks(List<TrackInfo> tracks) {
@@ -69,6 +72,35 @@ class TrackStore extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateTrack(TrackInfo track) {
+    final index = _tracks.indexWhere((t) => t.track.id == track.id);
+
+    if (index == -1) return;
+
+    final currentStatus = _tracks[index].status;
+    _tracks[index] = TrackWithStatus(
+      track: track,
+      status: currentStatus == TrackStatus.approved
+          ? TrackStatus.approved
+          : TrackStatus.modificationRequired,
+    );
+
+    notifyListeners();
+  }
+
+  void markTrackAsCorrect(String trackId) {
+    final index = _tracks.indexWhere((t) => t.track.id == trackId);
+
+    if (index == -1) return;
+
+    final track = _tracks[index].track;
+    _tracks[index] = TrackWithStatus(
+      track: track,
+      status: TrackStatus.approved,
+    );
+    notifyListeners();
+  }
+
   void approveAllTracks() {
     _tracks = _tracks
         .map(
@@ -80,17 +112,18 @@ class TrackStore extends ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteTrack(TrackInfo track) {
-    _tracks.removeWhere((t) => t.track.id == track.id);
+  void deleteTrack(String trackId) {
+    _tracks.removeWhere((t) => t.track.id == trackId);
+
     notifyListeners();
   }
 
   void replaceTrack(TrackInfo track) {
     int index = _tracks.indexWhere((t) => t.track.id == track.id);
-    TrackStatus status = _tracks[index].status;
 
     if (index != -1) {
-      _tracks[index] = TrackWithStatus(track: track, status: status);
+      final currentStatus = _tracks[index].status;
+      _tracks[index] = TrackWithStatus(track: track, status: currentStatus);
     }
 
     notifyListeners();

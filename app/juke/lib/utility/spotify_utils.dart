@@ -6,6 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:juke/constants.dart';
 import 'package:juke/models/fetch_results.dart';
+import 'package:juke/utility/string_utils.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
 import 'package:juke/models/track_info.dart';
 import 'package:uuid/uuid.dart';
@@ -87,7 +88,9 @@ class SpotifyUtils {
       final artists = (item['artists'] as List<dynamic>? ?? [])
           .map((a) => a['name'] as String)
           .toList();
+
       final releaseDate = item['album']?['release_date'] as String? ?? '';
+
       final releaseYear = releaseDate.isNotEmpty
           ? int.tryParse(releaseDate.split('-').first)
           : null;
@@ -95,10 +98,16 @@ class SpotifyUtils {
       tracks.add(
         TrackInfo(
           id: Uuid().v4(),
-          title: item['name'] as String,
-          primaryArtist: artists.isNotEmpty ? artists.first : 'Unknown Artist',
+          title: StringUtils.truncateToWord(item['name'] as String, 25),
+          primaryArtist: StringUtils.truncateToWord(
+            artists.isNotEmpty ? artists.first : 'Unknown Artist',
+            20,
+          ),
           secondaryArtists: artists.length > 1
-              ? artists.sublist(1, min(artists.length, 3))
+              ? artists
+                    .sublist(1, min(artists.length, 3))
+                    .map((artist) => StringUtils.truncateToWord(artist, 20))
+                    .toList()
               : const [],
           releaseYear: releaseYear,
         ),

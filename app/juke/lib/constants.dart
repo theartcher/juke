@@ -9,6 +9,7 @@ const Color onPrimaryColor = Color(0XFF1B1712);
 const Color secondaryColor = Color(0XFF1B1712);
 const Color onSecondaryColor = Color(0XFFFFFFFF);
 const Color errorColor = Color(0XFFDB3D3D);
+const Color onErrorColor = Colors.black;
 const Color surfaceColor = Color(0XFFEFE7D8);
 const Color onSurfaceColor = Color(0XFF1B1712);
 
@@ -30,7 +31,7 @@ var theme = ThemeData(
     tertiary: null,
     onTertiary: null,
     error: errorColor,
-    onError: Colors.white,
+    onError: onErrorColor,
     surface: surfaceColor,
     onSurface: onSurfaceColor,
   ),
@@ -43,7 +44,7 @@ const repairRoute = '/repair';
 
 // Router
 final GoRouter router = GoRouter(
-  initialLocation: repairRoute, //DEBUG  ONLY FOR TESTING
+  initialLocation: homeRoute,
   routes: <RouteBase>[
     GoRoute(
       path: homeRoute,

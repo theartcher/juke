@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:juke/constants.dart';
 import 'package:juke/stores/track_store.dart';
+import 'package:juke/widgets/messenger.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -20,6 +21,7 @@ class MainApp extends StatelessWidget {
         routerConfig: router,
         theme: theme,
         debugShowCheckedModeBanner: false,
+        scaffoldMessengerKey: MessengerService.messengerKey,
       ),
     );
   }
