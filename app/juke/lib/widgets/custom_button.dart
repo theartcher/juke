@@ -3,15 +3,6 @@ import 'package:juke/constants.dart';
 
 enum ButtonType { primary, secondary, destructive }
 
-class _DisabledPalette {
-  static const border = Color.fromARGB(255, 150, 145, 145);
-
-  static const filled = Color.fromARGB(168, 150, 145, 145);
-  static const onFilled = Color.fromARGB(175, 53, 52, 52);
-
-  static const onOutlined = Color.fromARGB(255, 150, 145, 145);
-}
-
 class CustomButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPress;
@@ -24,7 +15,7 @@ class CustomButton extends StatelessWidget {
     this.type = ButtonType.primary,
   });
 
-  static const disabledOpacity = 0.7;
+  static const disabledAlpha = 0.4;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +26,6 @@ class CustomButton extends StatelessWidget {
 
     return GestureDetector(
       onTap: onPress,
-
       child: Container(
         decoration: BoxDecoration(
           border: Border.all(width: 2, color: borderColor),
@@ -61,21 +51,31 @@ class CustomButton extends StatelessWidget {
 
   Color _getFillColor(ButtonType type, bool isDisabled) {
     if (type == ButtonType.primary) {
-      return isDisabled ? _DisabledPalette.filled : secondaryColor;
+      return isDisabled
+          ? secondaryColor.withValues(alpha: disabledAlpha)
+          : secondaryColor;
     }
-    // secondary & destructive are outlined — stay transparent, disabled or not
+
     return Colors.transparent;
   }
 
   Color _getBorderColor(ButtonType type, bool isDisabled) {
-    if (isDisabled) return _DisabledPalette.border;
-
     switch (type) {
       case ButtonType.primary:
+        return isDisabled
+            ? Color.alphaBlend(
+                secondaryColor.withValues(alpha: disabledAlpha),
+                surfaceColor,
+              )
+            : secondaryColor;
       case ButtonType.secondary:
-        return secondaryColor;
+        return isDisabled
+            ? secondaryColor.withValues(alpha: disabledAlpha)
+            : secondaryColor;
       case ButtonType.destructive:
-        return errorColor;
+        return isDisabled
+            ? secondaryColor.withValues(alpha: disabledAlpha)
+            : errorColor;
     }
   }
 
@@ -83,16 +83,16 @@ class CustomButton extends StatelessWidget {
     if (isDisabled) {
       switch (type) {
         case ButtonType.primary:
-          return _DisabledPalette.onFilled;
+          return surfaceColor;
         case ButtonType.secondary:
         case ButtonType.destructive:
-          return _DisabledPalette.onOutlined;
+          return secondaryColor.withValues(alpha: disabledAlpha);
       }
     }
 
     switch (type) {
       case ButtonType.primary:
-        return onSecondaryColor;
+        return surfaceColor;
       case ButtonType.secondary:
         return secondaryColor;
       case ButtonType.destructive:
