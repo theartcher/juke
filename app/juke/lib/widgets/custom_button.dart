@@ -3,16 +3,20 @@ import 'package:juke/constants.dart';
 
 enum ButtonType { primary, secondary, destructive }
 
+enum ButtonSize { small, large }
+
 class CustomButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPress;
   final ButtonType type;
+  final ButtonSize size;
 
   const CustomButton({
     super.key,
     required this.text,
     required this.onPress,
     this.type = ButtonType.primary,
+    this.size = ButtonSize.large,
   });
 
   static const disabledAlpha = 0.4;
@@ -32,14 +36,14 @@ class CustomButton extends StatelessWidget {
           color: fillColor,
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          padding: EdgeInsets.symmetric(vertical: _getPadding()),
           child: Center(
             child: Text(
               text.toUpperCase(),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: jetBrainsMonoFamily,
-                fontSize: 20.0,
+                fontSize: _getFontSize(),
                 color: textColor,
               ),
             ),
@@ -47,6 +51,24 @@ class CustomButton extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  double _getFontSize() {
+    switch (size) {
+      case ButtonSize.small:
+        return 16.0;
+      case ButtonSize.large:
+        return 20.0;
+    }
+  }
+
+  double _getPadding() {
+    switch (size) {
+      case ButtonSize.small:
+        return 8.0;
+      case ButtonSize.large:
+        return 16.0;
+    }
   }
 
   Color _getFillColor(ButtonType type, bool isDisabled) {

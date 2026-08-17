@@ -60,11 +60,7 @@ class TrackStore extends ChangeNotifier {
   }
 
   void setStatusForTrack(TrackInfo track, TrackStatus status) {
-    int index = _tracks.indexWhere(
-      (t) =>
-          t.track.title == track.title &&
-          t.track.primaryArtist == track.primaryArtist,
-    );
+    int index = _tracks.indexWhere((t) => t.track.id == track.id);
 
     if (index != -1) {
       _tracks[index] = TrackWithStatus(track: track, status: status);
@@ -85,11 +81,18 @@ class TrackStore extends ChangeNotifier {
   }
 
   void deleteTrack(TrackInfo track) {
-    _tracks.removeWhere(
-      (t) =>
-          t.track.title == track.title &&
-          t.track.primaryArtist == track.primaryArtist,
-    );
+    _tracks.removeWhere((t) => t.track.id == track.id);
+    notifyListeners();
+  }
+
+  void replaceTrack(TrackInfo track) {
+    int index = _tracks.indexWhere((t) => t.track.id == track.id);
+    TrackStatus status = _tracks[index].status;
+
+    if (index != -1) {
+      _tracks[index] = TrackWithStatus(track: track, status: status);
+    }
+
     notifyListeners();
   }
 }
