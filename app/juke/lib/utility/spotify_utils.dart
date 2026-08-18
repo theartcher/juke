@@ -40,9 +40,10 @@ class SpotifyUtils {
       return SpotifyFetchResult.needsLogin();
     }
 
+    //debug this is fucking broken and i have no clue why
     final uri = Uri.https('api.spotify.com', '/v1/playlists/$playlistId', {
       'fields':
-          'items(items(item(name,album(release_date),artists(name),track)))',
+          'tracks.items(track(name,album(release_date),artists(name),external_urls))',
     });
 
     final response = await http.get(
@@ -67,6 +68,10 @@ class SpotifyUtils {
     final decoded = jsonDecode(response.body) as Map<String, dynamic>;
     final tracks = _parseTracks(decoded);
 
+    if (tracks.isEmpty) {
+      return SpotifyFetchResult.empty();
+    }
+
     return SpotifyFetchResult.success(tracks);
   }
 
@@ -75,30 +80,31 @@ class SpotifyUtils {
   }
 
   static List<TrackInfo> _parseTracks(Map<String, dynamic> json) {
-    final entries = (json['items']?['items'] as List<dynamic>?) ?? [];
+    final entries = (json['tracks']?['items'] as List<dynamic>?) ?? [];
     final tracks = <TrackInfo>[];
 
     for (final entry in entries) {
-      final item = entry['item'] as Map<String, dynamic>?;
+      final track = entry['track'] as Map<String, dynamic>?;
+      if (track == null) continue;
 
-      if (item == null || item['track'] != true) {
-        continue;
-      }
-
-      final artists = (item['artists'] as List<dynamic>? ?? [])
+      final artists = (track['artists'] as List<dynamic>? ?? [])
+          .whereType<Map<String, dynamic>>()
           .map((a) => a['name'] as String)
           .toList();
 
-      final releaseDate = item['album']?['release_date'] as String? ?? '';
-
+      final releaseDate = track['album']?['release_date'] as String? ?? '';
       final releaseYear = releaseDate.isNotEmpty
           ? int.tryParse(releaseDate.split('-').first)
           : null;
 
+      final externalUrls =
+          track['external_urls'] as Map<String, dynamic>? ?? {};
+      final spotifyUrl = externalUrls['spotify'] as String? ?? '';
+
       tracks.add(
         TrackInfo(
           id: Uuid().v4(),
-          title: StringUtils.truncateToWord(item['name'] as String, 25),
+          title: StringUtils.truncateToWord(track['name'] as String, 25),
           primaryArtist: StringUtils.truncateToWord(
             artists.isNotEmpty ? artists.first : 'Unknown Artist',
             20,
@@ -110,6 +116,7 @@ class SpotifyUtils {
                     .toList()
               : const [],
           releaseYear: releaseYear,
+          directLink: spotifyUrl,
         ),
       );
     }

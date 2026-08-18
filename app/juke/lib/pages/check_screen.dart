@@ -114,8 +114,7 @@ class _CheckScreenState extends State<CheckScreen> {
 
       if (shouldContinue == true) {
         store.approveAllTracks();
-        //todo change to printing route
-        context.go(homeRoute);
+        context.go(printRoute);
       }
     }
 
@@ -222,8 +221,7 @@ class _CheckScreenState extends State<CheckScreen> {
                             showPrintConfirmationDialog(context, store);
                             return;
                           }
-                          context.go(homeRoute);
-                          //todo navigate to printing
+                          context.go(printRoute);
                         },
                         child: Center(
                           child: Text(

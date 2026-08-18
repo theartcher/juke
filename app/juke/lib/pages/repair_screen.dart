@@ -241,7 +241,7 @@ class _RepairScreenState extends State<RepairScreen> {
                             _showPrintConfirmationDialog(context, store);
                             return;
                           }
-                          context.go(homeRoute);
+                          context.go(printRoute);
                         },
                         type: ButtonType.primary,
                       ),

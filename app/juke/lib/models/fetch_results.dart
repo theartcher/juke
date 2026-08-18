@@ -26,4 +26,10 @@ class SpotifyFetchResult {
 
   factory SpotifyFetchResult.error(String message) =>
       SpotifyFetchResult._(SpotifyFetchStatus.error, [], message);
+
+  factory SpotifyFetchResult.empty() => const SpotifyFetchResult._(
+    SpotifyFetchStatus.success,
+    [],
+    "This playlist contains no songs. Please add some songs to the playlist and try again.",
+  );
 }

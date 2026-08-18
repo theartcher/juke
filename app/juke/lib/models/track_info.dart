@@ -4,6 +4,7 @@ class TrackInfo {
   final String primaryArtist;
   final List<String> secondaryArtists; // max 2
   final int? releaseYear;
+  final String directLink;
 
   const TrackInfo({
     required this.id,
@@ -11,6 +12,7 @@ class TrackInfo {
     required this.primaryArtist,
     required this.secondaryArtists,
     required this.releaseYear,
+    required this.directLink,
   });
 
   TrackInfo copyWith({
@@ -19,6 +21,7 @@ class TrackInfo {
     String? primaryArtist,
     List<String>? secondaryArtists,
     int? releaseYear,
+    String? directLink,
   }) {
     return TrackInfo(
       id: id ?? this.id,
@@ -26,6 +29,7 @@ class TrackInfo {
       primaryArtist: primaryArtist ?? this.primaryArtist,
       secondaryArtists: secondaryArtists ?? this.secondaryArtists,
       releaseYear: releaseYear ?? this.releaseYear,
+      directLink: directLink ?? this.directLink,
     );
   }
 
