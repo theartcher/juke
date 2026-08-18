@@ -106,7 +106,8 @@ class _RepairScreenState extends State<RepairScreen> {
     }
 
     if (shouldContinue == true) {
-      context.go(homeRoute);
+      store.approveAllTracks();
+      context.go(printRoute);
     }
   }
 

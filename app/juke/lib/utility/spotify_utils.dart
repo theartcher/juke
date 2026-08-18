@@ -40,12 +40,10 @@ class SpotifyUtils {
       return SpotifyFetchResult.needsLogin();
     }
 
-    //debug this is fucking broken and i have no clue why
     final uri = Uri.https('api.spotify.com', '/v1/playlists/$playlistId', {
       'fields':
-          'tracks.items(track(name,album(release_date),artists(name),external_urls))',
+          'items(items(item(name,external_urls.spotify,uri,album(release_date),artists(name))))',
     });
-
     final response = await http.get(
       uri,
       headers: {'Authorization': 'Bearer $accessToken'},
@@ -80,11 +78,11 @@ class SpotifyUtils {
   }
 
   static List<TrackInfo> _parseTracks(Map<String, dynamic> json) {
-    final entries = (json['tracks']?['items'] as List<dynamic>?) ?? [];
+    final entries = (json['items']?['items'] as List<dynamic>?) ?? [];
     final tracks = <TrackInfo>[];
 
     for (final entry in entries) {
-      final track = entry['track'] as Map<String, dynamic>?;
+      final track = entry['item'] as Map<String, dynamic>?;
       if (track == null) continue;
 
       final artists = (track['artists'] as List<dynamic>? ?? [])
@@ -97,9 +95,7 @@ class SpotifyUtils {
           ? int.tryParse(releaseDate.split('-').first)
           : null;
 
-      final externalUrls =
-          track['external_urls'] as Map<String, dynamic>? ?? {};
-      final spotifyUrl = externalUrls['spotify'] as String? ?? '';
+      final directUrl = track['external_urls']?['spotify'] as String? ?? '';
 
       tracks.add(
         TrackInfo(
@@ -116,7 +112,7 @@ class SpotifyUtils {
                     .toList()
               : const [],
           releaseYear: releaseYear,
-          directLink: spotifyUrl,
+          directLink: directUrl,
         ),
       );
     }
