@@ -59,17 +59,21 @@ class MessengerService {
     final context = messengerKey.currentContext!;
 
     final snackBar = SnackBar(
-      content: Row(
-        children: [
-          _getIcon(type, _getForegroundColor(type)),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              message,
-              style: TextStyle(color: _getForegroundColor(type)),
+      persist: false,
+      content: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Row(
+          spacing: 12.0,
+          children: [
+            _getIcon(type, _getForegroundColor(type)),
+            Expanded(
+              child: Text(
+                message,
+                style: TextStyle(color: _getForegroundColor(type)),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       actionOverflowThreshold: 0.5,
       backgroundColor: _getBackgroundColor(type),

@@ -68,7 +68,7 @@ class _RepairScreenState extends State<RepairScreen> {
 
     const dividerPadding = 12.0;
 
-    String _getActionText() {
+    String getActionText() {
       if (store.markedTracks.isEmpty) {
         return "No cards require attention, continue to printing";
       }
@@ -92,7 +92,7 @@ class _RepairScreenState extends State<RepairScreen> {
                     children: [
                       ...headerText,
                       Text(
-                        _getActionText().toUpperCase(),
+                        getActionText().toUpperCase(),
                         style: TextStyle(
                           fontFamily: jetBrainsMonoFamily,
                           fontSize: 18,
@@ -138,7 +138,6 @@ class _RepairScreenState extends State<RepairScreen> {
                             _showPrintConfirmationDialog(context, store);
                             return;
                           }
-
                           context.go(homeRoute);
                         },
                         type: ButtonType.primary,

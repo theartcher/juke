@@ -69,6 +69,56 @@ class _CheckScreenState extends State<CheckScreen> {
       });
     }
 
+    Future<void> showPrintConfirmationDialog(
+      BuildContext context,
+      TrackStore store,
+    ) async {
+      final shouldContinue = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) {
+          return AlertDialog(
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.zero,
+            ),
+            title: const Text('Skip deck check and continue to printing?'),
+            content: const Text(
+              "You haven't finished checking all your cards. Do you want to continue to printing anyway? You will not be able to make any changes to your cards if you do.",
+              style: TextStyle(
+                fontFamily: jetBrainsMonoFamily,
+                color: secondaryColor,
+                fontSize: 14,
+              ),
+            ),
+            actions: [
+              CustomButton(
+                onPress: () => Navigator.of(dialogContext).pop(true),
+                text: 'Continue to printing',
+                type: ButtonType.secondary,
+                size: ButtonSize.small,
+              ),
+              SizedBox(height: 8),
+              CustomButton(
+                onPress: () => Navigator.of(dialogContext).pop(false),
+                text: 'Stay and check cards',
+                type: ButtonType.primary,
+                size: ButtonSize.small,
+              ),
+            ],
+          );
+        },
+      );
+
+      if (!context.mounted || !mounted) {
+        return;
+      }
+
+      if (shouldContinue == true) {
+        store.approveAllTracks();
+        //todo change to printing route
+        context.go(homeRoute);
+      }
+    }
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -168,9 +218,12 @@ class _CheckScreenState extends State<CheckScreen> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          store.approveAllTracks();
+                          if (store.unverifiedTracks.isNotEmpty) {
+                            showPrintConfirmationDialog(context, store);
+                            return;
+                          }
                           context.go(homeRoute);
-                          //todo navigate to printing page
+                          //todo navigate to printing
                         },
                         child: Center(
                           child: Text(

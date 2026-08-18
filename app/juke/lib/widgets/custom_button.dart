@@ -28,7 +28,7 @@ class CustomButton extends StatelessWidget {
     final textColor = _getTextColor(type, isDisabled);
     final fillColor = _getFillColor(type, isDisabled);
 
-    return GestureDetector(
+    return InkWell(
       onTap: onPress,
       child: Container(
         decoration: BoxDecoration(
