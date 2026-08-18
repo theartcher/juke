@@ -35,7 +35,7 @@ class _CustomFormFieldState extends State<CustomFormField> {
           borderSide: BorderSide(color: secondaryColor, width: 2.0),
           borderRadius: BorderRadius.zero,
         ),
-        labelText: widget.labelText,
+        labelText: widget.labelText?.toUpperCase(),
         labelStyle: TextStyle(
           fontFamily: jetBrainsMonoFamily,
           fontSize: 14,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:juke/constants.dart';
+import 'package:juke/models/track_info.dart';
 import 'package:juke/stores/track_store.dart';
 import 'package:juke/widgets/custom_button.dart';
 import 'package:juke/widgets/header.dart';
@@ -16,6 +17,53 @@ class RepairScreen extends StatefulWidget {
 }
 
 class _RepairScreenState extends State<RepairScreen> {
+  final GlobalKey<AnimatedListState> _animatedListKey =
+      GlobalKey<AnimatedListState>();
+
+  void _dismissTrack(
+    int index,
+    TrackInfo track,
+    TrackStore store, {
+    required VoidCallback onAfterAnimation,
+  }) {
+    final animatedList = _animatedListKey.currentState;
+    if (animatedList == null) {
+      onAfterAnimation();
+      return;
+    }
+
+    animatedList.removeItem(index, (context, animation) {
+      final fadeAnimation = CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeInOutCubic,
+        reverseCurve: Curves.easeInOutCubic,
+      );
+
+      return FadeTransition(
+        opacity: fadeAnimation,
+        child: SizeTransition(
+          sizeFactor: fadeAnimation,
+          alignment: Alignment.center,
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: RepairTile(
+              key: ValueKey(track.id),
+              track: track,
+              onDelete: () {},
+              onTrackUpdated: (_) {},
+              onMark: () {},
+            ),
+          ),
+        ),
+      );
+    }, duration: const Duration(milliseconds: 220));
+
+    Future.delayed(const Duration(milliseconds: 220), () {
+      if (!mounted) return;
+      onAfterAnimation();
+    });
+  }
+
   Future<void> _showPrintConfirmationDialog(
     BuildContext context,
     TrackStore store,
@@ -68,6 +116,20 @@ class _RepairScreenState extends State<RepairScreen> {
 
     const dividerPadding = 12.0;
 
+    void restoreTrack(int index, TrackInfo track) {
+      final animatedList = _animatedListKey.currentState;
+      if (animatedList == null) {
+        return;
+      }
+
+      store.addTrack(track, status: TrackStatus.modificationRequired);
+
+      animatedList.insertItem(
+        index,
+        duration: const Duration(milliseconds: 220),
+      );
+    }
+
     String getActionText() {
       if (store.markedTracks.isEmpty) {
         return "No cards require attention, continue to printing";
@@ -99,35 +161,76 @@ class _RepairScreenState extends State<RepairScreen> {
                           color: primaryColor,
                         ),
                       ),
-                      ListView.separated(
+                      AnimatedList(
+                        key: _animatedListKey,
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        itemCount: store.markedTracks.length,
-                        separatorBuilder: (context, index) =>
-                            SizedBox(height: 16),
-                        itemBuilder: (context, index) {
+                        initialItemCount: store.markedTracks.length,
+                        itemBuilder: (context, index, animation) {
                           final track = store.markedTracks[index];
-                          return RepairTile(
-                            track: track,
-                            onDelete: () {
-                              store.deleteTrack(track.id);
-                              MessengerService().showMessage(
-                                message: "Card removed successfully",
-                                closeMessage: "OK",
-                                type: MessageType.info,
-                              );
-                            },
-                            onTrackUpdated: (updatedTrack) {
-                              store.updateTrack(updatedTrack);
-                            },
-                            onMark: () {
-                              store.markTrackAsCorrect(track.id);
-                              MessengerService().showMessage(
-                                message: "Card marked as corrected",
-                                closeMessage: "OK",
-                                type: MessageType.info,
-                              );
-                            },
+
+                          return FadeTransition(
+                            opacity: CurvedAnimation(
+                              parent: animation,
+                              curve: Curves.easeInOutCubic,
+                              reverseCurve: Curves.easeInOutCubic,
+                            ),
+                            child: SizeTransition(
+                              sizeFactor: animation,
+                              alignment: Alignment.center,
+                              child: Padding(
+                                padding: EdgeInsets.only(
+                                  bottom: index == store.markedTracks.length - 1
+                                      ? 0
+                                      : 16,
+                                ),
+                                child: RepairTile(
+                                  key: ValueKey(track.id),
+                                  track: track,
+                                  onDelete: () {
+                                    _dismissTrack(
+                                      index,
+                                      track,
+                                      store,
+                                      onAfterAnimation: () {
+                                        store.deleteTrack(track.id);
+                                        MessengerService().showMessage(
+                                          message: "Card removed successfully",
+                                          closeMessage: "UNDO",
+                                          onClose: () {
+                                            restoreTrack(index, track);
+                                          },
+                                          type: MessageType.info,
+                                          duration: const Duration(seconds: 3),
+                                        );
+                                      },
+                                    );
+                                  },
+                                  onTrackUpdated: (updatedTrack) {
+                                    store.updateTrack(updatedTrack);
+                                  },
+                                  onMark: () {
+                                    _dismissTrack(
+                                      index,
+                                      track,
+                                      store,
+                                      onAfterAnimation: () {
+                                        store.markTrackAsCorrect(track.id);
+                                        MessengerService().showMessage(
+                                          message: "Card marked as corrected",
+                                          closeMessage: "UNDO",
+                                          onClose: () {
+                                            restoreTrack(index, track);
+                                          },
+                                          duration: const Duration(seconds: 3),
+                                          type: MessageType.info,
+                                        );
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
                           );
                         },
                       ),
@@ -141,13 +244,6 @@ class _RepairScreenState extends State<RepairScreen> {
                           context.go(homeRoute);
                         },
                         type: ButtonType.primary,
-                      ),
-                      CustomButton(
-                        text: "DEBUG",
-                        onPress: () {
-                          store.debugTracks();
-                        },
-                        type: ButtonType.destructive,
                       ),
                     ],
                   ),

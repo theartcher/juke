@@ -36,22 +36,6 @@ class TrackStore extends ChangeNotifier {
       .map((track) => track.track)
       .toList();
 
-  void debugTracks() {
-    final track = TrackWithStatus(
-      track: TrackInfo(
-        id: Uuid().v4(),
-        title: 'One Last Time',
-        primaryArtist: 'Daft Punk',
-        releaseYear: 2001,
-        secondaryArtists: [],
-      ),
-      status: TrackStatus.modificationRequired,
-    );
-
-    _tracks.add(track);
-    notifyListeners();
-  }
-
   void initializeTracks(List<TrackInfo> tracks) {
     _tracks = tracks
         .map(
@@ -126,6 +110,14 @@ class TrackStore extends ChangeNotifier {
       _tracks[index] = TrackWithStatus(track: track, status: currentStatus);
     }
 
+    notifyListeners();
+  }
+
+  void addTrack(
+    TrackInfo track, {
+    TrackStatus status = TrackStatus.unverified,
+  }) {
+    _tracks.add(TrackWithStatus(track: track, status: status));
     notifyListeners();
   }
 }

@@ -179,9 +179,7 @@ class _RepairTileState extends State<RepairTile> {
                   type: ButtonType.destructive,
                   size: ButtonSize.small,
                   text: 'delete card',
-                  onPress: () {
-                    widget.onDelete();
-                  },
+                  onPress: widget.onDelete,
                 ),
               ),
               Expanded(
