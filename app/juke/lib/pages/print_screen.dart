@@ -4,6 +4,7 @@ import 'package:juke/constants.dart';
 import 'package:juke/stores/track_store.dart';
 import 'package:juke/utility/pdf_utils.dart';
 import 'package:juke/widgets/custom_button.dart';
+import 'package:juke/widgets/duplex_side_selector.dart';
 import 'package:juke/widgets/header.dart';
 import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +20,7 @@ class _PrintScreenState extends State<PrintScreen> {
   Uint8List? _cachedPdfBytes;
   bool _isBusy = false;
   String? _statusMessage;
+  DuplexFlip _selectedFlipSide = DuplexFlip.longEdge;
 
   Future<Uint8List?> _preparePdf(TrackStore store) async {
     if (store.verifiedTracks.isEmpty) {
@@ -200,6 +202,14 @@ class _PrintScreenState extends State<PrintScreen> {
                           fontSize: subHeaderTextSize,
                         ),
                       ),
+                      DuplexSideSelector(
+                        selectedFlipSide: _selectedFlipSide,
+                        onChanged: (DuplexFlip newValue) {
+                          setState(() {
+                            _selectedFlipSide = newValue;
+                          });
+                        },
+                      ),
                       if (_statusMessage != null)
                         Text(
                           _statusMessage!,
@@ -214,7 +224,6 @@ class _PrintScreenState extends State<PrintScreen> {
                         onPress: _isBusy ? null : () => _printCards(store),
                         type: ButtonType.primary,
                       ),
-
                       CustomButton(
                         text: 'share pdf',
                         onPress: _isBusy ? null : () => _sharePdf(store),

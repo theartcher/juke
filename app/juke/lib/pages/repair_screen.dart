@@ -85,7 +85,7 @@ class _RepairScreenState extends State<RepairScreen> {
           actions: [
             CustomButton(
               onPress: () => Navigator.of(dialogContext).pop(true),
-              text: 'Continue to printing',
+              text: 'Skip repair and print',
               type: ButtonType.secondary,
               size: ButtonSize.small,
             ),

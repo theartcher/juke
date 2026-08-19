@@ -92,7 +92,7 @@ class _CheckScreenState extends State<CheckScreen> {
             actions: [
               CustomButton(
                 onPress: () => Navigator.of(dialogContext).pop(true),
-                text: 'Continue to printing',
+                text: 'Skip check and print',
                 type: ButtonType.secondary,
                 size: ButtonSize.small,
               ),
