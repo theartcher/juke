@@ -19,24 +19,22 @@ class PrintScreen extends StatefulWidget {
 class _PrintScreenState extends State<PrintScreen> {
   Uint8List? _cachedPdfBytes;
   bool _isBusy = false;
-  String? _statusMessage;
   DuplexFlip _selectedFlipSide = DuplexFlip.longEdge;
 
   Future<Uint8List?> _preparePdf(TrackStore store) async {
     if (store.verifiedTracks.isEmpty) {
-      setState(() {
-        _statusMessage = 'No verified tracks available to print yet.';
-      });
       return null;
     }
 
     setState(() {
       _isBusy = true;
-      _statusMessage = 'Generating your deck PDF...';
     });
 
     try {
-      final pdfBytes = await PdfUtils.buildPdfBytes(store.verifiedTracks);
+      final pdfBytes = await PdfUtils.buildPdfBytes(
+        store.verifiedTracks,
+        duplexFlip: _selectedFlipSide,
+      );
 
       if (!mounted) {
         return null;
@@ -44,7 +42,6 @@ class _PrintScreenState extends State<PrintScreen> {
 
       setState(() {
         _cachedPdfBytes = pdfBytes;
-        _statusMessage = 'Deck PDF ready.';
       });
 
       return pdfBytes;
@@ -52,10 +49,6 @@ class _PrintScreenState extends State<PrintScreen> {
       if (!mounted) {
         return null;
       }
-
-      setState(() {
-        _statusMessage = 'Could not generate PDF: $error';
-      });
 
       return null;
     } finally {
@@ -68,9 +61,7 @@ class _PrintScreenState extends State<PrintScreen> {
   }
 
   Future<void> _printCards(TrackStore store) async {
-    final pdfBytes = await _preparePdf(
-      store,
-    ); // todo add cache -> _cachedPdfBytes ??
+    final pdfBytes = await _preparePdf(store);
     if (pdfBytes == null) {
       return;
     }
@@ -84,27 +75,8 @@ class _PrintScreenState extends State<PrintScreen> {
       if (!mounted) {
         return;
       }
-
-      setState(() {
-        _statusMessage = 'Print dialog opened.';
-      });
-    } on MissingPluginException {
-      if (!mounted) {
-        return;
-      }
-
-      setState(() {
-        _statusMessage =
-            'Printing plugin not registered yet. Stop the app and run it again (full restart) after adding dependencies.';
-      });
     } catch (error) {
-      if (!mounted) {
-        return;
-      }
-
-      setState(() {
-        _statusMessage = 'Printing failed: $error';
-      });
+      return;
     }
   }
 
@@ -120,27 +92,8 @@ class _PrintScreenState extends State<PrintScreen> {
       if (!mounted) {
         return;
       }
-
-      setState(() {
-        _statusMessage = 'Share sheet opened.';
-      });
-    } on MissingPluginException {
-      if (!mounted) {
-        return;
-      }
-
-      setState(() {
-        _statusMessage =
-            'Printing plugin not registered yet. Stop the app and run it again (full restart) after adding dependencies.';
-      });
     } catch (error) {
-      if (!mounted) {
-        return;
-      }
-
-      setState(() {
-        _statusMessage = 'Could not open share sheet: $error';
-      });
+      return;
     }
   }
 
@@ -172,7 +125,7 @@ class _PrintScreenState extends State<PrintScreen> {
         ),
       ),
       Text(
-        'Print your cards, cut and fold accordingly and enjoy your new personalized deck.',
+        'Print your cards and cut accordingly to enjoy your new personalized deck.',
         style: TextStyle(
           fontFamily: jetBrainsMonoFamily,
           fontSize: subHeaderTextSize,
@@ -187,7 +140,7 @@ class _PrintScreenState extends State<PrintScreen> {
             const Header(showModeSwitcher: false),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -195,30 +148,30 @@ class _PrintScreenState extends State<PrintScreen> {
                     spacing: dividerPadding * 2,
                     children: [
                       ...headerText,
-                      Text(
-                        '${store.verifiedTracks.length} verified cards ready',
-                        style: TextStyle(
-                          fontFamily: jetBrainsMonoFamily,
-                          fontSize: subHeaderTextSize,
-                        ),
-                      ),
-                      DuplexSideSelector(
-                        selectedFlipSide: _selectedFlipSide,
-                        onChanged: (DuplexFlip newValue) {
-                          setState(() {
-                            _selectedFlipSide = newValue;
-                          });
-                        },
-                      ),
-                      if (_statusMessage != null)
-                        Text(
-                          _statusMessage!,
-                          style: TextStyle(
-                            fontFamily: jetBrainsMonoFamily,
-                            fontSize: 14,
-                            color: secondaryColor,
-                          ),
-                        ),
+                      _isBusy
+                          ? Center(
+                              child: Column(
+                                spacing: 16,
+                                children: [
+                                  Text(
+                                    'Preparing your PDF...',
+                                    style: TextStyle(
+                                      fontFamily: jetBrainsMonoFamily,
+                                      fontSize: subHeaderTextSize,
+                                    ),
+                                  ),
+                                  CircularProgressIndicator(),
+                                ],
+                              ),
+                            )
+                          : DuplexSideSelector(
+                              selectedFlipSide: _selectedFlipSide,
+                              onChanged: (DuplexFlip newValue) {
+                                setState(() {
+                                  _selectedFlipSide = newValue;
+                                });
+                              },
+                            ),
                       CustomButton(
                         text: 'print my cards',
                         onPress: _isBusy ? null : () => _printCards(store),
