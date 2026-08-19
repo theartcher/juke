@@ -182,11 +182,6 @@ class _PrintScreenState extends State<PrintScreen> {
                         onPress: _isBusy ? null : () => _sharePdf(store),
                         type: ButtonType.secondary,
                       ),
-                      CustomButton(
-                        text: 'open faq',
-                        onPress: null,
-                        type: ButtonType.secondary,
-                      ),
                     ],
                   ),
                 ),
