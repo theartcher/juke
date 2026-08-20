@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 void main() async {
   await dotenv.load(fileName: "assets/.env");
   MobileScannerPlatform.instance.setWebBarcodeReader(
-    WebBarcodeReader.zxingWasm,
+    WebBarcodeReader.auto,
   );
   runApp(const MainApp());
 }
