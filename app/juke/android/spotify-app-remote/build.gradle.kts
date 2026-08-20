@@ -8,9 +8,9 @@ val aarCandidates =
         file(".")
                 .listFiles()
                 ?.filter {
-                    it.isFile &&
-                            it.name.startsWith("spotify-app-remote-release-") &&
-                            it.extension == "aar"
+                        it.isFile &&
+                                it.name.startsWith("spotify-app-remote-release-") &&
+                                it.extension == "aar"
                 }
                 ?.sortedByDescending { it.name }
                 ?: emptyList()

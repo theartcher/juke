@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:juke/pages/check_screen.dart';
+import 'package:juke/pages/home/qr_scanner_screen.dart';
 import 'package:juke/pages/home_screen.dart';
 import 'package:juke/pages/print_screen.dart';
 import 'package:juke/pages/repair_screen.dart';
@@ -40,6 +41,7 @@ var theme = ThemeData(
 
 // Routes
 const homeRoute = '/';
+const scanRoute = '/scan';
 const checkRoute = '/check';
 const repairRoute = '/repair';
 const printRoute = '/print';
@@ -52,6 +54,12 @@ final GoRouter router = GoRouter(
       path: homeRoute,
       builder: (BuildContext context, GoRouterState state) {
         return const HomeScreen();
+      },
+    ),
+    GoRoute(
+      path: scanRoute,
+      builder: (BuildContext context, GoRouterState state) {
+        return const QrScannerScreen();
       },
     ),
     GoRoute(
