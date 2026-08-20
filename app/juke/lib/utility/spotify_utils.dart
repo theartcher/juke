@@ -19,8 +19,42 @@ class SpotifyUtils {
   static String get _redirectUrl =>
       kIsWeb ? _webRedirectUrl : _androidRedirectUrl;
 
-  static const _scope = 'playlist-read-private,playlist-read-collaborative';
+  static const _playlistScope =
+      'playlist-read-private,playlist-read-collaborative';
+
   static final _playlistIdRegex = RegExp(r'playlist/([a-zA-Z0-9]+)');
+  static Future<void>? _remoteConnection;
+
+  /// Connects to Spotify App Remote once per app session.
+  ///
+  /// Getting a Web API access token is separate from establishing this
+  /// connection, which is required by the player APIs below.
+  static Future<void> _ensureRemoteConnection() {
+    return _remoteConnection ??= _connectToRemote();
+  }
+
+  static Future<void> connect() => _ensureRemoteConnection();
+
+  static void clearRemoteConnection() {
+    _remoteConnection = null;
+  }
+
+  static Future<void> _connectToRemote() async {
+    try {
+      final connected = await SpotifySdk.connectToSpotifyRemote(
+        clientId: _clientId,
+        redirectUrl: _redirectUrl,
+      );
+
+      if (!connected) {
+        throw StateError('Spotify App Remote did not connect');
+      }
+    } catch (_) {
+      // Permit a later action to retry if Spotify was closed or denied access.
+      _remoteConnection = null;
+      rethrow;
+    }
+  }
 
   static Future<SpotifyFetchResult> fetchPlaylist(String playlistUrl) async {
     final playlistId = _extractPlaylistId(playlistUrl);
@@ -34,7 +68,7 @@ class SpotifyUtils {
       accessToken = await SpotifySdk.getAccessToken(
         clientId: _clientId,
         redirectUrl: _redirectUrl,
-        scope: _scope,
+        scope: _playlistScope,
       );
     } on PlatformException catch (error) {
       return SpotifyFetchResult.needsLogin();
@@ -118,5 +152,41 @@ class SpotifyUtils {
     }
 
     return tracks;
+  }
+
+  static Future<bool> isPlaying() async {
+    await _ensureRemoteConnection();
+    final playerState = await SpotifySdk.getPlayerState();
+
+    return playerState != null && !playerState.isPaused;
+  }
+
+  static Future<void> togglePlayback() async {
+    await _ensureRemoteConnection();
+    final playerState = await SpotifySdk.getPlayerState();
+
+    if (playerState == null) {
+      throw Exception('Could not get Spotify player state');
+    }
+
+    if (playerState.isPaused) {
+      await SpotifySdk.resume();
+    } else {
+      await SpotifySdk.pause();
+    }
+  }
+
+  static Future<void> playTrack(String spotifyUrl) async {
+    final match = RegExp(r'/track/([a-zA-Z0-9]+)').firstMatch(spotifyUrl);
+
+    if (match == null) {
+      throw Exception('Invalid Spotify track URL');
+    }
+
+    final trackId = match.group(1)!;
+    final spotifyUri = 'spotify:track:$trackId';
+
+    await _ensureRemoteConnection();
+    await SpotifySdk.play(spotifyUri: spotifyUri);
   }
 }
