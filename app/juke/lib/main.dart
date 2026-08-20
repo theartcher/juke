@@ -3,10 +3,14 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:juke/constants.dart';
 import 'package:juke/stores/track_store.dart';
 import 'package:juke/widgets/messenger.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   await dotenv.load(fileName: "assets/.env");
+  MobileScannerPlatform.instance.setWebBarcodeReader(
+    WebBarcodeReader.zxingWasm,
+  );
   runApp(const MainApp());
 }
 
