@@ -3,28 +3,23 @@ import 'package:juke/constants.dart';
 
 enum ButtonType { primary, secondary, destructive }
 
-class _DisabledPalette {
-  static const border = Color.fromARGB(255, 150, 145, 145);
-
-  static const filled = Color.fromARGB(168, 150, 145, 145);
-  static const onFilled = Color.fromARGB(175, 53, 52, 52);
-
-  static const onOutlined = Color.fromARGB(255, 150, 145, 145);
-}
+enum ButtonSize { small, large }
 
 class CustomButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPress;
   final ButtonType type;
+  final ButtonSize size;
 
   const CustomButton({
     super.key,
     required this.text,
     required this.onPress,
     this.type = ButtonType.primary,
+    this.size = ButtonSize.large,
   });
 
-  static const disabledOpacity = 0.7;
+  static const disabledAlpha = 0.4;
 
   @override
   Widget build(BuildContext context) {
@@ -33,22 +28,22 @@ class CustomButton extends StatelessWidget {
     final textColor = _getTextColor(type, isDisabled);
     final fillColor = _getFillColor(type, isDisabled);
 
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(width: 2, color: borderColor),
-        color: fillColor,
-      ),
-      child: GestureDetector(
-        onTap: onPress,
+    return InkWell(
+      onTap: onPress,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(width: 2, color: borderColor),
+          color: fillColor,
+        ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          padding: EdgeInsets.symmetric(vertical: _getPadding()),
           child: Center(
             child: Text(
               text.toUpperCase(),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: jetBrainsMonoFamily,
-                fontSize: 20.0,
+                fontSize: _getFontSize(),
                 color: textColor,
               ),
             ),
@@ -58,23 +53,51 @@ class CustomButton extends StatelessWidget {
     );
   }
 
+  double _getFontSize() {
+    switch (size) {
+      case ButtonSize.small:
+        return 16.0;
+      case ButtonSize.large:
+        return 20.0;
+    }
+  }
+
+  double _getPadding() {
+    switch (size) {
+      case ButtonSize.small:
+        return 8.0;
+      case ButtonSize.large:
+        return 16.0;
+    }
+  }
+
   Color _getFillColor(ButtonType type, bool isDisabled) {
     if (type == ButtonType.primary) {
-      return isDisabled ? _DisabledPalette.filled : secondaryColor;
+      return isDisabled
+          ? secondaryColor.withValues(alpha: disabledAlpha)
+          : secondaryColor;
     }
-    // secondary & destructive are outlined — stay transparent, disabled or not
+
     return Colors.transparent;
   }
 
   Color _getBorderColor(ButtonType type, bool isDisabled) {
-    if (isDisabled) return _DisabledPalette.border;
-
     switch (type) {
       case ButtonType.primary:
+        return isDisabled
+            ? Color.alphaBlend(
+                secondaryColor.withValues(alpha: disabledAlpha),
+                surfaceColor,
+              )
+            : secondaryColor;
       case ButtonType.secondary:
-        return secondaryColor;
+        return isDisabled
+            ? secondaryColor.withValues(alpha: disabledAlpha)
+            : secondaryColor;
       case ButtonType.destructive:
-        return errorColor;
+        return isDisabled
+            ? secondaryColor.withValues(alpha: disabledAlpha)
+            : errorColor;
     }
   }
 
@@ -82,16 +105,16 @@ class CustomButton extends StatelessWidget {
     if (isDisabled) {
       switch (type) {
         case ButtonType.primary:
-          return _DisabledPalette.onFilled;
+          return surfaceColor;
         case ButtonType.secondary:
         case ButtonType.destructive:
-          return _DisabledPalette.onOutlined;
+          return secondaryColor.withValues(alpha: disabledAlpha);
       }
     }
 
     switch (type) {
       case ButtonType.primary:
-        return onSecondaryColor;
+        return surfaceColor;
       case ButtonType.secondary:
         return secondaryColor;
       case ButtonType.destructive:

@@ -1,0 +1,71 @@
+name: Deploy Juke to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'app/juke/**'
+      - '.github/workflows/deploy-github-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    defaults:
+      run:
+        working-directory: app/juke
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Pages
+        uses: actions/configure-pages@v5
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Configure Spotify
+        env:
+          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+          SPOTIFY_ANDROID_REDIRECT_URL: ${{ secrets.SPOTIFY_ANDROID_REDIRECT_URL }}
+          SPOTIFY_WEB_REDIRECT_URL: ${{ secrets.SPOTIFY_WEB_REDIRECT_URL }}
+        run: |
+          printf 'CLIENT_ID=%s\nANDROID_REDIRECT_URL=%s\nWEB_REDIRECT_URL=%s\n' \
+            "$SPOTIFY_CLIENT_ID" \
+            "$SPOTIFY_ANDROID_REDIRECT_URL" \
+            "$SPOTIFY_WEB_REDIRECT_URL" > assets/.env
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build web app
+        run: flutter build web --release --base-href "/"
+
+      - name: Add GitHub Pages fallback
+        run: cp build/web/index.html build/web/404.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: app/juke/build/web
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

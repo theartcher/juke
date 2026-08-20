@@ -27,17 +27,19 @@ class _HomeScreenBody extends StatelessWidget {
     final currentIndex = store.currentMode == ModeOption.create ? 0 : 1;
 
     return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Header(),
-          Expanded(
-            child: IndexedStack(
-              index: currentIndex,
-              children: const [CreateSubScreen(), ScanSubScreen()],
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Header(showModeSwitcher: true),
+            Expanded(
+              child: IndexedStack(
+                index: currentIndex,
+                children: const [CreateSubScreen(), ScanSubScreen()],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
