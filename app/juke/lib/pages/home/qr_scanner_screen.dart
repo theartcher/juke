@@ -41,14 +41,14 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
   }
 
   Future<void> _closeScanner([String? result]) async {
-    if (_isClosing) return;
+    if (_isClosing || !mounted) {
+      return;
+    }
 
     _isClosing = true;
     try {
       await _controller.stop();
     } finally {
-      if (!mounted) return;
-
       context.pop(result);
     }
   }

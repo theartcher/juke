@@ -44,7 +44,7 @@ class _CreateSubScreenState extends State<CreateSubScreen> {
     final trackStore = context.watch<TrackStore>();
 
     final hasInput = musicLink.isNotEmpty;
-    final isValid = linkType != LinkType.Unsupported;
+    final isValid = linkType != LinkType.unsupported;
 
     Future<void> handleFetchResults(SpotifyFetchResult results) async {
       switch (results.status) {

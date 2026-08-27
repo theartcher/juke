@@ -1,5 +1,3 @@
-include(":spotify-app-remote")
-
 pluginManagement {
     val flutterSdkPath =
         run {
@@ -18,6 +16,17 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            url = uri("https://jitpack.io")
+        }
+    }
+}
+
 
 plugins {
     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
