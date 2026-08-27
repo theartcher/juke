@@ -9,7 +9,7 @@ class HomePageNotifier extends ChangeNotifier {
   String _musicLink = "";
   String get musicLink => _musicLink;
 
-  LinkType _linkType = LinkType.Unsupported;
+  LinkType _linkType = LinkType.unsupported;
   LinkType get linkType => _linkType;
 
   void changeMode(ModeOption option) {
@@ -19,9 +19,9 @@ class HomePageNotifier extends ChangeNotifier {
 
   void setMusicLink(String newLink) {
     if (isLinkSupported(newLink)) {
-      _linkType = LinkType.Spotify;
+      _linkType = LinkType.spotify;
     } else {
-      _linkType = LinkType.Unsupported;
+      _linkType = LinkType.unsupported;
     }
     _musicLink = newLink;
     notifyListeners();

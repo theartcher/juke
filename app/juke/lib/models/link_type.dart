@@ -1,1 +1,1 @@
-enum LinkType { Unsupported, Spotify }
+enum LinkType { unsupported, spotify }

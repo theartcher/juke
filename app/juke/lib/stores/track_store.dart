@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:juke/models/track_info.dart';
-import 'package:uuid/uuid.dart';
 
 enum TrackStatus { unverified, approved, modificationRequired }
 

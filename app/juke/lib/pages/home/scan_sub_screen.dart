@@ -6,8 +6,6 @@ import 'package:juke/constants.dart';
 import 'package:juke/utility/spotify_utils.dart';
 import 'package:juke/widgets/custom_button.dart';
 import 'package:juke/widgets/messenger.dart';
-import 'package:spotify_sdk/models/connection_status.dart';
-import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
 
 class ScanSubScreen extends StatefulWidget {
@@ -23,8 +21,8 @@ class _ScanSubScreenState extends State<ScanSubScreen> {
   bool _isConnecting = false;
   bool _hasScannedTrack = false;
   bool _loadingPlaybackState = false;
-  StreamSubscription<ConnectionStatus>? _connectionStatusSubscription;
-  StreamSubscription<PlayerState>? _playerStateSubscription;
+  StreamSubscription? _connectionStatusSubscription;
+  StreamSubscription? _playerStateSubscription;
 
   Future<void> _connectSpotify() async {
     setState(() {
