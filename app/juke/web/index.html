@@ -44,7 +44,27 @@
   <script src="flutter_bootstrap.js" async></script>
   <script src="https://sdk.scdn.co/spotify-player.js"></script>
   <script>
-    window.onSpotifyWebPlaybackSDKReady = (evt) => {};
+    // iOS Safari only lets audio start from a tap. The Web Playback SDK needs
+    // activateElement() called inside one, but spotify_sdk never calls it, so
+    // play/pause silently do nothing. Keep hold of the player and unlock it on
+    // every tap instead.
+    let spotifyPlayer;
+
+    window.onSpotifyWebPlaybackSDKReady = (evt) => {
+      const SpotifyPlayer = Spotify.Player;
+      Spotify.Player = class extends SpotifyPlayer {
+        constructor(options) {
+          super(options);
+          spotifyPlayer = this;
+          this.addListener('autoplay_failed', () => {
+            console.warn('Spotify playback was blocked by the browser');
+          });
+        }
+      };
+    };
+
+    window.addEventListener('touchend', () => spotifyPlayer?.activateElement(), true);
+    window.addEventListener('click', () => spotifyPlayer?.activateElement(), true);
   </script>
 </body>
 </html>
