@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:go_router/go_router.dart';
@@ -18,6 +19,17 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
   @override
   void initState() {
     super.initState();
+
+    // Safari's built-in BarcodeDetector never finds anything on a live video
+    // feed, so use zxing-wasm there instead (every iOS browser is Safari under
+    // the hood).
+    if (kIsWeb &&
+        (defaultTargetPlatform == TargetPlatform.iOS ||
+            defaultTargetPlatform == TargetPlatform.macOS)) {
+      MobileScannerPlatform.instance.setWebBarcodeReader(
+        WebBarcodeReader.zxingWasm,
+      );
+    }
 
     _controller = MobileScannerController(
       autoStart: true,
